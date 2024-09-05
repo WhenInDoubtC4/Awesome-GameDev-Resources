@@ -4,7 +4,8 @@
 2. This one, for in class coding assignments. https://github.com/InfiniBrains/Awesome-GameDev-Resources
 3. MoBaGEn, for interactive assignments. https://github.com/InfiniBrains/mobagen
 4. Install `CLion` :simple-clion: (has `CMake` :simple-cmake: embedded) or see [#development-tools](#development-tools)
-5. Those repositories are updated constantly. Pay attention to syncing your repo frequently.
+5. Install git and add the binaries to your PATH;
+6. Those repositories are updated constantly. Pay attention to syncing your repo frequently.
 
 ## Types of coding assignments
 
@@ -30,10 +31,17 @@ There are two types of coding assignments:
 2. Fork repos or duplicate the target repo on your account; 
    
     1. If you want to make it count as part of your portfolio, fork the repo follow [this](https://docs.github.com/en/get-started/quickstart/fork-a-repo);
-    2. If you want to keep it private or be FERPA compliant, duplicate the repo following [this](https://docs.github.com/en/repositories/creating-and-managing-repositories/duplicating-a-repository);
+    2. If you want to keep it private or be FERPA compliant, duplicate the repo following [this](https://docs.github.com/en/repositories/creating-and-managing-repositories/duplicating-a-repository). 
    
 3. Add my user to your repo to it with `read` role. My userid is `tolstenko`(or your professor) on github, for other options, talk with me in class. Follow [this](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/managing-teams-and-people-with-access-to-your-repository);
 4. Send me a message on canvas with the link to your repo;
+
+!!! note "Private repo"
+
+    GitHub doesnt allow private fork of a public repo. If you want to receive my updates into your private repo you can do in 2 different ways: 
+    
+    1. Create an empty repo. Clone it to your machine. In your GitKraken or any other git tool, add my repo as another origin. Merge from from mine to yours with flag `--allow-unrelated-histories` (search it)
+    2. Create an empty repo and clone it to your machine. From time to time, download the files from my repo and replace the ones I might have updated/fixed.
 
 ## Recordings
 
@@ -58,7 +66,7 @@ If you want to use `Visual Studio` :simple-visualstudio:, be assured that you ha
 
 ### Opening the Repos
 
-1. Fork and clone the repos. [Make it private](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility#changing-a-repositorys-visibility);
+1. Fork and clone the repos. [Make it private if you can](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility#changing-a-repositorys-visibility);
 2. Open `CLion` :simple-clion: or yor preferred `IDE` with `CMake` :simple-cmake: support;
 3. Open the `CMakeLists.txt` as project from the root of the repo;
 4. Wait for the setup to finish (it will download the dependencies automatically, such as `SDL`);

@@ -1,3 +1,53 @@
+## [1.20.17](https://github.com/InfiniBrains/Awesome-GameDev-Resources/compare/v1.20.16...v1.20.17) (2024-09-01)
+
+
+### Bug Fixes
+
+* game dev tools research ([729e9b9](https://github.com/InfiniBrains/Awesome-GameDev-Resources/commit/729e9b98caa6f7991beeb39e62d4170c3132c47e))
+
+## [1.20.16](https://github.com/InfiniBrains/Awesome-GameDev-Resources/compare/v1.20.15...v1.20.16) (2024-08-30)
+
+
+### Bug Fixes
+
+* neurodivergence post ([a403ab9](https://github.com/InfiniBrains/Awesome-GameDev-Resources/commit/a403ab9acb19baffa62c0737709f266726144021))
+
+## [1.20.15](https://github.com/InfiniBrains/Awesome-GameDev-Resources/compare/v1.20.14...v1.20.15) (2024-08-28)
+
+
+### Bug Fixes
+
+* gource contribution avatars ([8a6b7f6](https://github.com/InfiniBrains/Awesome-GameDev-Resources/commit/8a6b7f600755d86559adea262b491516db3ad31c))
+
+## [1.20.14](https://github.com/InfiniBrains/Awesome-GameDev-Resources/compare/v1.20.13...v1.20.14) (2024-08-28)
+
+
+### Bug Fixes
+
+* bump semantic-release dependency ([213e3d2](https://github.com/InfiniBrains/Awesome-GameDev-Resources/commit/213e3d2980e9b579f869c016dbaafbcf4b609b24))
+* gource avatar fetch ([e81da87](https://github.com/InfiniBrains/Awesome-GameDev-Resources/commit/e81da87d503d8e8d549b28b49c6f260983ffcffa))
+
+## [1.20.13](https://github.com/InfiniBrains/Awesome-GameDev-Resources/compare/v1.20.12...v1.20.13) (2024-08-28)
+
+
+### Bug Fixes
+
+* tags on blog should be lower case ([24909cb](https://github.com/InfiniBrains/Awesome-GameDev-Resources/commit/24909cb9612464f1b3bfb12b42fe2bc16d8209f2))
+
+## [1.20.12](https://github.com/InfiniBrains/Awesome-GameDev-Resources/compare/v1.20.11...v1.20.12) (2024-08-28)
+
+
+### Bug Fixes
+
+* enable social cards ([5f27b4e](https://github.com/InfiniBrains/Awesome-GameDev-Resources/commit/5f27b4ef49a9ff30292f7ac24648914737e8300f))
+
+## [1.20.11](https://github.com/InfiniBrains/Awesome-GameDev-Resources/compare/v1.20.10...v1.20.11) (2024-08-27)
+
+
+### Bug Fixes
+
+* syllabus date fixes ([faf1fc8](https://github.com/InfiniBrains/Awesome-GameDev-Resources/commit/faf1fc8a92dc5ec079148da050cbdeca0a63022a))
+
 ## [1.20.10](https://github.com/InfiniBrains/Awesome-GameDev-Resources/compare/v1.20.9...v1.20.10) (2024-08-26)
 
 
