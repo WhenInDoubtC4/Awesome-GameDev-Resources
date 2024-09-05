@@ -3,6 +3,7 @@
 #include <vector>
 #include <utility>
 #include <cmath>
+#include <string>
 
 using namespace std;
 
@@ -100,8 +101,31 @@ struct Cohesion {
 
   Cohesion() = default;
 
-  Vector2 ComputeForce(const vector<Boid>& boids, int boidAgentIndex) {
-    return {};
+  Vector2 ComputeForce(const vector<Boid>& boids, int boidAgentIndex) 
+  {
+    //Empty neighborhood
+    if (boids.empty()) return Vector2::zero;
+
+    const Boid& agent = boids[boidAgentIndex];
+
+    Vector2 centerOfMass = Vector2::zero;
+
+    int neighborhoodSize = 0;
+    for (const Boid& boid : boids)
+    {
+      float distance = Vector2::Distance(agent.position, boid.position);
+
+      //Is self or outside of radius
+      if (distance == 0.f || distance > radius) continue;
+
+      centerOfMass += boid.position;
+      neighborhoodSize++;
+    }
+    centerOfMass /= float(neighborhoodSize);
+
+    return Vector2::Distance(centerOfMass, agent.position) <= radius
+               ? Vector2(centerOfMass - agent.position) / radius * k
+               : Vector2::zero;
   }
 };
 
@@ -111,8 +135,31 @@ struct Alignment {
 
   Alignment() = default;
 
-  Vector2 ComputeForce(const vector<Boid>& boids, int boidAgentIndex) {
-    return {};
+  Vector2 ComputeForce(const vector<Boid>& boids, int boidAgentIndex, float deltaTime) 
+  {
+    //Empty
+    if (boids.empty()) return Vector2::zero;
+    
+    const Boid& agent = boids[boidAgentIndex];
+    
+    int neighborhoodSize = 0;
+    Vector2 avgVelocity = Vector2::zero;
+
+    for (const Boid& boid : boids)
+    {
+      float distance = Vector2::Distance(agent.position, boid.position);
+
+      //Is self or outside of radius
+      if (distance == 0.f || distance > radius) continue;
+
+      avgVelocity += boid.velocity;
+      neighborhoodSize++;
+    }
+
+    avgVelocity /= float(neighborhoodSize);
+
+    //Compute force from velocity and time
+    return avgVelocity / deltaTime * k;
   }
 };
 
@@ -123,8 +170,32 @@ struct Separation {
 
   Separation() = default;
 
-  Vector2 ComputeForce(const vector<Boid>& boids, int boidAgentIndex) {
-    return {};
+  Vector2 ComputeForce(const vector<Boid>& boids, int boidAgentIndex) 
+  {
+
+    //Empty
+    if (boids.empty()) return Vector2::zero;
+
+    const Boid& agent = boids[boidAgentIndex];
+    Vector2 separationForce = Vector2::zero;
+
+    for (const Boid& boid : boids)
+    {
+      float distance = Vector2::Distance(boid.position, agent.position);
+
+      //Self or outside of radius
+      if (distance == 0.f || distance > radius) continue;
+
+      Vector2 agentToBoid = boid.position - agent.position;
+      separationForce += agentToBoid.normalized() / distance;
+    }
+
+    //Clamp force
+    separationForce = separationForce.getMagnitude() > maxForce
+                          ? separationForce.normalized() * maxForce
+                          : separationForce;
+
+    return separationForce * k;
   }
 };
 
@@ -149,6 +220,7 @@ int main() {
   }
   // Final input reading and processing
   // todo: edit this. probably my code will be different than yours.
+  cin.ignore();
   while (getline(cin, line)) { // game loop
     // Use double buffer! you should read from the current and store changes in the new state.
     currentState = newState;
@@ -171,7 +243,7 @@ int main() {
         }
         // Process Alignment Forces
         if (i != j && dist <= alignment.radius) {
-          allForces[i] += alignment.ComputeForce(currentState, i);
+          allForces[i] += alignment.ComputeForce(currentState, i, deltaT);
         }
       }
     }
