@@ -37,14 +37,15 @@ void execTurn(int columns, int lines)
     {
       //Get neighbors
       int liveNeighbors = 0;
-      liveNeighbors+= board[clampIndex(y - 1, lines)][clampIndex(x - 1, columns)]; //Top left
-      liveNeighbors += board[clampIndex(y - 1, lines)][x]; //Top
-      liveNeighbors += board[clampIndex(y - 1, lines)][clampIndex(x + 1, columns)]; //Top right
-      liveNeighbors += board[y][clampIndex(x - 1, columns)]; //Left
-      liveNeighbors += board[y][clampIndex(x + 1, columns)]; //Right
-      liveNeighbors += board[clampIndex(y + 1, lines)][clampIndex(x - 1, columns)]; //Bottom left
-      liveNeighbors += board[clampIndex(y + 1, lines)][x]; //Bottom
-      liveNeighbors += board[clampIndex(y + 1, lines)][clampIndex(x + 1, columns)]; // Bottom right
+      for (int dy = -1; dy <= 1; dy++)
+      {
+        for (int dx = -1; dx <= 1; dx++)
+        {
+          if (dx == 0 && dy == 0) continue;
+
+          liveNeighbors += board[clampIndex(y + dy, lines)][clampIndex(x + dx, columns)];
+        }
+      }
 
       if (board[y][x])
       {
