@@ -1,28 +1,101 @@
-// add your imports here
-#include <fstream>
 #include <iostream>
-#include <istream>
-const std::string TEST_FOLDER = "\\tests\\";
-unsigned int xorShift(unsigned int seed, int r1, int r2);
-int main(){
-  // code here
-  unsigned int seed, N, min, max;
-  std::cin >> seed >> N >> min >> max;
-  unsigned int i;
-  for(i = N; i >= 1; i--)
-  {
-    //Run xor shift
-    seed = xorShift(seed, min, max);
-  }
-}
-//The purpose of this function is to take the number and xor shift it to output a pseudo-random number
-    unsigned int xorShift(unsigned int seed, int r1, int r2)
+#include <cstdint>
+#include <unordered_set>
+
+using namespace std;
+
+//Type of unsigned int64 that the generator uses (for easy access)
+typedef uint64_t uint64;
+
+//Reference: https://rosettacode.org/wiki/Pseudo-random_numbers/Splitmix64#:~:text=Splitmix64%20is%20the%20default%20pseudo,for%20many%20random%20number%20needs.
+class Splitmix64
 {
-  seed = seed xor (seed << 13);
-  seed = seed xor (seed >> 17);
-  seed = seed xor (seed << 5);
-  int value = r1 + (seed % (r2 - r1 + 1)); //clamps the value to between r1 and r2
-          //output the new values
-          std::cout << value << std::endl;
-  return seed;
+public:
+  Splitmix64(uint64 seed);
+
+  uint64 generate();
+  uint64 generateRange(uint64 min, uint64 max);
+
+private:
+  uint64 _seed = 0;
+};
+
+Splitmix64::Splitmix64(uint64 seed) : _seed (seed) {}
+
+uint64 Splitmix64::generate()
+{
+  //Increment seed
+  _seed += 0x9e3779b97f4a7c15;
+
+  //Store seed in variable that will be outputted
+  uint64 result = _seed;
+
+  //xorshift then multiply by constant (step 1)
+  result ^= result >> 30;
+  result *= 0xbf58476d1ce4e5b9;
+
+  //xorshift then multiply by constant (step 2)
+  result ^= result >> 27;
+  result *= 0x94d049bb133111eb;
+
+  //final xorshift
+  result ^= result >> 31;
+
+  return result;
+}
+
+uint64 Splitmix64::generateRange(uint64 min, uint64 max)
+{
+  return generate() % (max - min) + min;
+}
+
+struct genState
+{
+  uint64 state;
+  int iteration;
+
+  bool operator==(const genState &other) const
+  {
+    return state == other.state;
+  }
+};
+
+auto hashFunction = [](const genState &state)
+{
+  return state.state;
+};
+
+unordered_set<genState, decltype(hashFunction)> stateSet;
+
+int main()
+{
+  uint64 seed, rangeMin, rangeMax;
+
+  cout << "Enter seed, range min, range max\n";
+  cin >> seed >> rangeMin >> rangeMax;
+
+  //Initialize generator
+  Splitmix64 generator(seed);
+
+  int iter = 0;
+
+  //Scary!
+  while (true)
+  {
+    //Generate next state
+    genState nextState{generator.generateRange(rangeMin, rangeMax), iter++};
+
+    for (const genState& currentState : stateSet)
+    {
+      if (currentState == nextState)
+      {
+        printf("Transient state = %i, current state = %i (in range %i-%i)", currentState.iteration, iter - currentState.iteration, rangeMin, rangeMax);
+        return 0;
+      }
+    }
+
+    stateSet.insert(nextState);
+  }
+
+  return 0;
 }
