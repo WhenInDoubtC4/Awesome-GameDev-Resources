@@ -100,6 +100,33 @@ uint64 Xoshiro256Star::generateRange(uint64 min, uint64 max)
   return generate() % (max - min) + min;
 }
 
+class LCG : CustomRNG
+{
+public:
+  explicit LCG(uint64 seed) : CustomRNG(seed) {};
+  virtual uint64 generate() override;
+  virtual uint64 generateRange(uint64 min, uint64 max) override;
+
+private:
+  //Use ANSI constants
+  const uint64 _MODULUS = (1 << 31); // 2^31
+  const uint64 _MULTIPLIER = 1103515245;
+  const uint64 _INCREMENT = 12345;
+};
+
+//https://en.wikipedia.org/wiki/Linear_congruential_generator
+uint64 LCG::generate()
+{
+  _seed = (_MULTIPLIER * _seed + _INCREMENT) % _MODULUS;
+
+  return _seed;
+}
+
+uint64 LCG::generateRange(uint64 min, uint64 max)
+{
+  return generate() % (max - min) + min;
+}
+
 struct genState
 {
   uint64 state;
@@ -201,6 +228,9 @@ int main()
 
   printf("Running tests for Xoshiro256*\n");
   results.push_back(runTests<Xoshiro256Star>(distribution, rng, iterations, rangeMin, rangeMax, "Xoshiro256*"));
+
+  printf("Running tests for LCG*\n");
+  results.push_back(runTests<LCG>(distribution, rng, iterations, rangeMin, rangeMax, "Linear congruential generator (LCG)"));
 
   printf("Overall test results:\nName\tAvg. warming\tAvg. periodic\n");
   for (const TestResult& result : results)
