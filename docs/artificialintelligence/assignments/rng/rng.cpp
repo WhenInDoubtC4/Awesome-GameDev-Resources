@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdint>
 #include <unordered_set>
+#include <random>
 
 using namespace std;
 
@@ -62,40 +63,68 @@ struct genState
 
 auto hashFunction = [](const genState &state)
 {
-  return state.state;
+  //Knuth's Multiplicative Method https://gist.github.com/badboy/6267743
+  return (state.state * 2654435761) >> 32;
 };
 
 unordered_set<genState, decltype(hashFunction)> stateSet;
 
 int main()
 {
-  uint64 seed, rangeMin, rangeMax;
+  uint64 iterations, rangeMin, rangeMax;
 
-  cout << "Enter seed, range min, range max\n";
-  cin >> seed >> rangeMin >> rangeMax;
+  cout << "Enter iterations, range min, range max\n";
+  cin >> iterations >> rangeMin >> rangeMax;
 
-  //Initialize generator
-  Splitmix64 generator(seed);
+  //Use RNG to initialize the RNG!
+  random_device device;
+  mt19937 rng(device());
+  uniform_int_distribution<uint64> distribution(0, UINT64_MAX);
 
-  int iter = 0;
+  //Values to calculate averages from at the end
+  int transients = 0;
+  int currents = 0;
 
-  //Scary!
-  while (true)
+  for (int i = 0; i < iterations; i++)
   {
-    //Generate next state
-    genState nextState{generator.generateRange(rangeMin, rangeMax), iter++};
+    //Initialize generator (with another RNG! :) )
+    Splitmix64 generator(distribution(rng));
 
-    for (const genState& currentState : stateSet)
+    printf("Iteration %i: ", i);
+
+    int iter = 0;
+
+    //Scary!
+    bool cont = true;
+    while (cont)
     {
-      if (currentState == nextState)
+      //Generate next state
+      genState nextState{generator.generateRange(rangeMin, rangeMax), iter++};
+
+      for (const genState& currentState : stateSet)
       {
-        printf("Transient state = %i, current state = %i (in range %i-%i)", currentState.iteration, iter - currentState.iteration, rangeMin, rangeMax);
-        return 0;
+        if (currentState == nextState)
+        {
+          int transient =  currentState.iteration;
+          int current = iter - currentState.iteration;
+
+          transients += transient;
+          currents += current;
+
+          printf("Transient state = %i, current state = %i (in range %i-%i)\n", transient, current, rangeMin, rangeMax);
+          cont = false;
+          break;
+        }
       }
+
+      stateSet.insert(nextState);
     }
 
-    stateSet.insert(nextState);
+    //Clear set for next iteration
+    stateSet.clear();
   }
+
+  printf("Avg. transient state = %f, avg. current state = %f, over %i iterations\n", float(transients)/float(iterations), float(currents)/float(iterations), iterations);
 
   return 0;
 }
