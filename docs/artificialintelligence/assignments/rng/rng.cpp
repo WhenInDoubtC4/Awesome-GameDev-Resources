@@ -82,8 +82,8 @@ int main()
   uniform_int_distribution<uint64> distribution(0, UINT64_MAX);
 
   //Values to calculate averages from at the end
-  int transients = 0;
-  int currents = 0;
+  int warmings = 0;
+  int periodics = 0;
 
   for (int i = 0; i < iterations; i++)
   {
@@ -105,13 +105,13 @@ int main()
       {
         if (currentState == nextState)
         {
-          int transient =  currentState.iteration;
-          int current = iter - currentState.iteration;
+          int warming =  currentState.iteration;
+          int periodic = iter - currentState.iteration;
 
-          transients += transient;
-          currents += current;
+          warmings += warming;
+          periodics += periodic;
 
-          printf("Transient state = %i, current state = %i (in range %i-%i)\n", transient, current, rangeMin, rangeMax);
+          printf("Warming phase = %i, periodic phase = %i (in range %i-%i)\n", warming, periodic, rangeMin, rangeMax);
           cont = false;
           break;
         }
@@ -124,7 +124,7 @@ int main()
     stateSet.clear();
   }
 
-  printf("Avg. transient state = %f, avg. current state = %f, over %i iterations\n", float(transients)/float(iterations), float(currents)/float(iterations), iterations);
+  printf("Avg. warming phase = %f, avg. periodic phase = %f, over %i iterations\n", float(warmings)/float(iterations), float(periodics)/float(iterations), iterations);
 
   return 0;
 }
