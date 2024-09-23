@@ -38,18 +38,56 @@ void printMaze(const vector<vector<Node>>& maze, int columns, int lines)
     cout << '|';
     for (int y = 0; y < lines; y++)
     {
-      cout << (maze[x][y].wallHor ? '_' : ' ')
-           << (maze[x][y].wallVer ? '|' : ' ');
+      cout << (maze[x][y].wallVer ? '_' : ' ')
+           << (maze[x][y].wallHor ? '|' : ' ');
     }
 
     cout << '\n';
   }
 }
 
+vector<pair<Node*, bool*>> getVisitableNeighbors(vector<vector<Node>>& maze, int x, int y, int boundx, int boundy)
+{
+  vector<pair<Node*, bool*>> neighbors;
+
+  printf("x=%i, y=%i\n", x, y);
+
+  //Up
+  if (y > 0)
+  {
+    if (!maze[x][y - 1].isVisited) neighbors.emplace_back(&maze[x][y - 1], &maze[x][y - 1].wallVer);
+  }
+  cout << "up\n";
+
+  //Right
+  if (x < boundx - 1)
+  {
+    if (!maze[x + 1][y].isVisited) neighbors.emplace_back(&maze[x + 1][y], &maze[x][y].wallHor);
+  }
+  cout << "Right\n";
+
+  //Down
+  if (y < boundy - 1)
+  {
+    if (!maze[x][y + 1].isVisited) neighbors.emplace_back(&maze[x][y + 1], &maze[x][y].wallVer);
+  }
+  cout << "Down\n";
+
+  //Left
+  if (x > 0)
+  {
+    if (!maze[x - 1][x].isVisited) neighbors.emplace_back(&maze[x - 1][x], &maze[x - 1][y].wallHor);
+  }
+  cout << "Left\n";
+
+  return neighbors;
+}
+
 int main()
 {
   uint32_t columns, lines, index;
   cin >> columns >> lines >> index;
+  randomIndex = index;
 
   //Generate maze and init indices
   vector<vector<Node>> maze(columns, vector<Node>(lines));
@@ -63,6 +101,41 @@ int main()
   }
 
   printMaze(maze, columns, lines);
+
+  stack<Node*> nodeStack;
+
+  //Add top cell to stack
+  nodeStack.push(&maze[0][0]);
+
+  while (!nodeStack.empty())
+  {
+    Node* topNode = nodeStack.top();
+
+    //Get all visitable neighbors
+    vector<pair<Node*, bool*>> neighbors = getVisitableNeighbors(maze, topNode->x, topNode->y, columns, lines);
+
+    if (!neighbors.empty())
+    {
+      //Mark the top cell as visited
+      topNode->isVisited = true;
+
+      //Choose a neighbor
+      pair<Node*, bool*>& selectedNeighbor = neighbors[generateRandom(neighbors.size() - 1)];
+
+      //Remove the wall between cell and neighbors
+      *selectedNeighbor.second = false;
+
+      //Add the neighbor to the stack
+      nodeStack.push(selectedNeighbor.first);
+    }
+    else
+    {
+      //Backtrack
+      nodeStack.pop();
+    }
+
+    printMaze(maze, columns, lines);
+  }
 
   return 0;
 }
