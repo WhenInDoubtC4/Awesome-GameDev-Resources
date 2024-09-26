@@ -12,7 +12,7 @@ int randomIndex = 0;
 
 int generateRandom(int max)
 {
-  return RANDOM_NUMBER_LIST[randomIndex++] % max;
+  return RANDOM_NUMBER_LIST[randomIndex++ % 100] % max;
 }
 
 struct Node
@@ -22,20 +22,29 @@ struct Node
   int x = -1;
   int y = -1;
 
-  bool wallVer = true;
-  bool wallHor = true;
+  bool wallVer = true; //Up/down
+  bool wallHor = true; //Left/right
 };
 
 void printMaze(const vector<vector<Node>>& maze, int columns, int lines)
 {
+  //Top wall
+  for (int i = 0; i < columns; i++) cout << " _";
+  //2 extra spaces before new line to make the tests happy
+  cout << "  \n";
+
   for (const vector<Node>& lines : maze)
   {
+    //Left wall
+    cout << '|';
+
     for (const Node& node : lines)
     {
       cout << (node.wallVer ? '_' : ' ');
       cout << (node.wallHor ? '|' : ' ');
     }
-    cout << '\n';
+    //Extra space once again
+    cout << " \n";
   }
 }
 
@@ -44,40 +53,16 @@ vector<pair<Node&, bool&>> getVisitableNeighbors(vector<vector<Node>>& maze, int
   vector<pair<Node&, bool&>> neighbors;
 
   //Up
-  if (y > 0)
-  {
-    if (!maze[y - 1][x].isVisited) {
-      printf("UP x=%i y=%i wall: VER x=%i, y=%i\n", x, y - 1, x, y -1);
-      neighbors.emplace_back(maze[y - 1][x], maze[y - 1][x].wallVer);
-    }
-  }
+  if (y > 0 && !maze[y - 1][x].isVisited) neighbors.emplace_back(maze[y - 1][x], maze[y - 1][x].wallVer);
 
   //Right
-  if (x < boundx - 1)
-  {
-    if (!maze[y][x + 1].isVisited) {
-      printf("RI x=%i y=%i wall: HOR x=%i, y=%i\n", x + 1, y, x, y);
-      neighbors.emplace_back(maze[y][x + 1], maze[y][x].wallHor);
-    }
-  }
+  if (x < boundx - 1 && !maze[y][x + 1].isVisited) neighbors.emplace_back(maze[y][x + 1], maze[y][x].wallHor);
 
   //Down
-  if (y < boundy - 1)
-  {
-    if (!maze[y + 1][x].isVisited) {
-      printf("DN x=%i y=%i wall: VER x=%i, y=%i\n", x, y + 1, x, y);
-      neighbors.emplace_back(maze[y + 1][x], maze[y][x].wallVer);
-    }
-  }
+  if (y < boundy - 1 && !maze[y + 1][x].isVisited) neighbors.emplace_back(maze[y + 1][x], maze[y][x].wallVer);
 
   //Left
-  if (x > 0)
-  {
-    if (!maze[y][x - 1].isVisited) {
-      printf("LE x=%i y=%i wall: HOR x=%i, y=%i\n0", x - 1, y, x - 1, y);
-      neighbors.emplace_back(maze[y][x - 1], maze[y][x - 1].wallHor);
-    }
-  }
+  if (x > 0 && !maze[y][x - 1].isVisited) neighbors.emplace_back(maze[y][x - 1], maze[y][x - 1].wallHor);
 
   return neighbors;
 }
@@ -99,7 +84,7 @@ int main()
     }
   }
 
-  printMaze(maze, columns, lines);
+  // /printMaze(maze, columns, lines);
 
   stack<Node*> nodeStack;
 
@@ -109,21 +94,16 @@ int main()
   while (!nodeStack.empty())
   {
     Node* topNode = nodeStack.top();
-
-    printf("Top node: x=%i y=%i\n", topNode->x, topNode->y);
+    //Mark the top cell as visited
+    topNode->isVisited = true;
 
     //Get all visitable neighbors
     vector<pair<Node&, bool&>> neighbors = getVisitableNeighbors(maze, topNode->x, topNode->y, columns, lines);
 
     if (!neighbors.empty())
     {
-      nodeStack.pop();
-
-      //Mark the top cell as visited
-      topNode->isVisited = true;
-
       //Choose a neighbor
-      pair<Node&, bool&> selectedNeighbor = neighbors[generateRandom(neighbors.size())];
+      pair<Node&, bool&> selectedNeighbor = neighbors.size() == 1 ? neighbors[0] : neighbors[generateRandom(neighbors.size())];
 
       //Remove the wall between cell and neighbors
       selectedNeighbor.second = false;
@@ -137,10 +117,10 @@ int main()
       nodeStack.pop();
     }
 
-    printMaze(maze, columns, lines);
+    //printMaze(maze, columns, lines);
   }
 
-  cout << "Done\n";
+  printMaze(maze, columns, lines);
 
   return 0;
 }
